@@ -1,0 +1,22 @@
+{
+  "name": "obrio-team/google-api-client",
+  "description": "PHP package to manage google-api interactions",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Alexander Zodov",
+      "email": "alekzo1992@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.4",
+    "google/apiclient": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "ObrioTeam\\GoogleApiClient\\": "src/"
+    }
+  }
+}
