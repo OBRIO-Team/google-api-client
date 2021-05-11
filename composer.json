@@ -11,6 +11,7 @@
     }
   ],
   "require": {
+    "ext-http": "*",
     "php": "^7.4",
     "google/apiclient": "*"
   },
