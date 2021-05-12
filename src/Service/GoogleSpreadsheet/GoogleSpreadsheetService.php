@@ -170,11 +170,9 @@ class GoogleSpreadsheetService
         string $spreadsheetId,
         AddSingleRowRequest $addSingleRowRequest
     ): Google_Service_Sheets_AppendValuesResponse {
-        $nativeSheets = new Google_Service_Sheets($this->googleSpreadsheetClient);
+        $updateRange = $addSingleRowRequest->getSheetPageTitle().'!'.chr($addSingleRowRequest->getColumnStart() + 65);
 
-        $updateRange = $addSingleRowRequest->getSheetPageTitle().'!'.$addSingleRowRequest->getColumnStart();
-
-        return $nativeSheets->spreadsheets_values->append(
+        return $this->googleSpreadsheetClient->spreadsheets_values->append(
             $spreadsheetId,
             $updateRange,
             new Google_Service_Sheets_ValueRange([
