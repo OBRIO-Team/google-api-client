@@ -18,7 +18,7 @@ declare(strict_types=1);
 namespace ObrioTeam\GoogleApiClient\Service\ItemStatus\Status;
 
 
-use http\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 
 /**
  * Class ContentStatusAbstract
