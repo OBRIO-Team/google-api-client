@@ -21,6 +21,7 @@ use Google_Service_Sheets_BatchUpdateSpreadsheetResponse;
 use Google_Service_Sheets_Spreadsheet;
 use Google_Service_Sheets_UpdateValuesResponse;
 use Google_Service_Sheets_ValueRange;
+use Google_Service_Sheets_AppendValuesResponse;
 use ObrioTeam\GoogleApiClient\Client\GoogleServiceDriveLocal;
 use ObrioTeam\GoogleApiClient\Client\GoogleServicesFactory;
 use ObrioTeam\GoogleApiClient\Client\GoogleServiceSpreadsheetLocal;
@@ -170,7 +171,7 @@ class GoogleSpreadsheetService
         string $spreadsheetId,
         AddSingleRowRequest $addSingleRowRequest
     ): Google_Service_Sheets_AppendValuesResponse {
-        $updateRange = $addSingleRowRequest->getSheetPageTitle().'!'.chr($addSingleRowRequest->getColumnStart() + 65);
+        $updateRange = $addSingleRowRequest->getSheetPageTitle().'!'.chr($addSingleRowRequest->getColumnStart() + 65).'1';
 
         return $this->googleSpreadsheetClient->spreadsheets_values->append(
             $spreadsheetId,
