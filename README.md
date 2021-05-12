@@ -1,12 +1,18 @@
 # Google-api-client
 PHP package to manage google-api interactions
 
-##Supports:
+## Supports:
 * Google Drive API
 * Google Spreadsheet API
 
-##Config:
+##Installation
 
+```composer log
+composer require obrio-team/google-api-client
+```
+
+## Config:
+* Provide auth credential configs for native google-apiclient library
 * Enable dependency injection. E.g. Symfony config.yaml
 ```yaml
 services:
@@ -26,7 +32,7 @@ services:
           '@App\Domain\Statuses\CustomStatusOne' #implementation
       ]
 ```
-##Google drive service
+## Google drive service
 
 | Method        | Arguments | Output  |  Description  |
 | ------------- |:-------------:|:-----:|:--------------------------------------------------------|
@@ -39,7 +45,7 @@ services:
 | changeFileStatus| Google_Service_Drive_DriveFile $file, ContentStatusAbstract $targetStatus | ?Google_Service_Drive_DriveFile | Try to update file name with status using GoogleItemStatusService |
 
 
-##Google spreadsheet service
+## Google spreadsheet service
 
 | Method        | Arguments | Output  |  Description  |
 | ------------- |:-------------:|:-----:|:--------------------------------------------------------|
@@ -52,7 +58,7 @@ services:
 | appendDimensionToSpreadsheetPage  | string $spreadsheetId, AppendDimensionToSpreadsheetPageRequest $appendDimensionToSpreadsheetPageRequest | Google_Service_Sheets_BatchUpdateSpreadsheetResponse  |  Append colimns or rows to the specific sheet of the spreadsheet.  |
 | createGoogleSpreadsheet  | string $name, ?string $parentFolderId = null | Google_Service_Sheets_Spreadsheet  |  Create new spreadsheet file in defined parent folder.  |
 
-###Hints
+### Hints
 To get all mentioned ...Request DTOs use this factories:
 ```phpt
 \ObrioTeam\GoogleApiClient\Factory\GoogleDriveFileFactory::class;
