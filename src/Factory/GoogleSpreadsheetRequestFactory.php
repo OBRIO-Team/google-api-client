@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace ObrioTeam\GoogleApiClient\Factory;
 
+use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSingleRowRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSpreadsheetPageRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendDimensionToSpreadsheetPageRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateFieldRequest;
@@ -96,14 +97,16 @@ class GoogleSpreadsheetRequestFactory
     /**
      * @param array $values
      * @param SpreadsheetDataModel $spreadsheetDataModel
+     * @param int|null $rowStart
      * @return UpdateRangeRequest
      */
     public function createUpdateRangeRequest(
         array $values,
-        SpreadsheetDataModel $spreadsheetDataModel
+        SpreadsheetDataModel $spreadsheetDataModel,
+        ?int $rowStart = null
     ): UpdateRangeRequest {
         $rowRangeValues = [];
-        $i = self::FIRST_ROW;
+        $i = $rowStart ?? self::FIRST_ROW;
         foreach ($values as $value) {
 
             $singleRow = [];
@@ -120,11 +123,35 @@ class GoogleSpreadsheetRequestFactory
         }
 
         return new UpdateRangeRequest(
-            self::FIRST_ROW,
+            $rowStart ?? self::FIRST_ROW,
             $spreadsheetDataModel->getFirstColumnPosition(),
             $i,
             $spreadsheetDataModel->getLastColumnPosition(),
             $rowRangeValues,
+            $spreadsheetDataModel->getSheetTitle()
+        );
+    }
+
+    /**
+     * @param array $values
+     * @param SpreadsheetDataModel $spreadsheetDataModel
+     * @return AddSingleRowRequest
+     */
+    public function createAddSingleRowRequest(
+        array $values,
+        SpreadsheetDataModel $spreadsheetDataModel
+    ): AddSingleRowRequest {
+        $targetHeaders = $spreadsheetDataModel->getHeaders();
+
+        $plainValues = [];
+
+        foreach ($targetHeaders as $targetHeader) {
+            $plainValues[] = $values[$targetHeader];
+        }
+
+        return new AddSingleRowRequest(
+            $spreadsheetDataModel->getFirstColumnPosition(),
+            $plainValues,
             $spreadsheetDataModel->getSheetTitle()
         );
     }

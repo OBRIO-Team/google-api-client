@@ -20,9 +20,11 @@ namespace ObrioTeam\GoogleApiClient\Service\GoogleSpreadsheet;
 use Google_Service_Sheets_BatchUpdateSpreadsheetResponse;
 use Google_Service_Sheets_Spreadsheet;
 use Google_Service_Sheets_UpdateValuesResponse;
+use Google_Service_Sheets_ValueRange;
 use ObrioTeam\GoogleApiClient\Client\GoogleServiceDriveLocal;
 use ObrioTeam\GoogleApiClient\Client\GoogleServicesFactory;
 use ObrioTeam\GoogleApiClient\Client\GoogleServiceSpreadsheetLocal;
+use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSingleRowRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSpreadsheetPageRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendDimensionToSpreadsheetPageRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateFieldRequest;
@@ -46,8 +48,10 @@ class GoogleSpreadsheetService
      * @param GoogleServicesFactory $googleServicesFactory
      * @param GoogleDriveFileFactory $googleDriveFileFactory
      */
-    public function __construct(GoogleServicesFactory $googleServicesFactory, GoogleDriveFileFactory $googleDriveFileFactory)
-    {
+    public function __construct(
+        GoogleServicesFactory $googleServicesFactory,
+        GoogleDriveFileFactory $googleDriveFileFactory
+    ) {
         $this->googleSpreadsheetClient = $googleServicesFactory->createGoogleServiceSheet();
         $this->googleServiceDriveLocal = $googleServicesFactory->createGoogleServiceDrive();
         $this->googleDriveFileFactory = $googleDriveFileFactory;
@@ -88,7 +92,8 @@ class GoogleSpreadsheetService
         ?string $sheetTitle = null,
         string $range = ''
     ): GoogleSheetValuesResponse {
-        return $this->serializeResponseValues($this->googleSpreadsheetClient->getValues($spreadsheetId, $sheetTitle, $range));
+        return $this->serializeResponseValues($this->googleSpreadsheetClient->getValues($spreadsheetId, $sheetTitle,
+            $range));
     }
 
     /**
@@ -96,8 +101,10 @@ class GoogleSpreadsheetService
      * @param UpdateFieldRequest $updateFieldRequest
      * @return Google_Service_Sheets_UpdateValuesResponse
      */
-    public function updateField(string $spreadsheetId, UpdateFieldRequest $updateFieldRequest): Google_Service_Sheets_UpdateValuesResponse
-    {
+    public function updateField(
+        string $spreadsheetId,
+        UpdateFieldRequest $updateFieldRequest
+    ): Google_Service_Sheets_UpdateValuesResponse {
         return $this->googleSpreadsheetClient->updateField($spreadsheetId, $updateFieldRequest);
     }
 
@@ -106,8 +113,10 @@ class GoogleSpreadsheetService
      * @param UpdateRangeRequest $updateRangeRequest
      * @return Google_Service_Sheets_UpdateValuesResponse
      */
-    public function updateRange(string $spreadsheetId, UpdateRangeRequest $updateRangeRequest): Google_Service_Sheets_UpdateValuesResponse
-    {
+    public function updateRange(
+        string $spreadsheetId,
+        UpdateRangeRequest $updateRangeRequest
+    ): Google_Service_Sheets_UpdateValuesResponse {
         return $this->googleSpreadsheetClient->updateRange($spreadsheetId, $updateRangeRequest);
     }
 
@@ -116,8 +125,10 @@ class GoogleSpreadsheetService
      * @param AddSpreadsheetPageRequest $addSpreadsheetPageRequest
      * @return Google_Service_Sheets_BatchUpdateSpreadsheetResponse
      */
-    public function addSpreadsheetPage(string $spreadsheetId, AddSpreadsheetPageRequest $addSpreadsheetPageRequest): Google_Service_Sheets_BatchUpdateSpreadsheetResponse
-    {
+    public function addSpreadsheetPage(
+        string $spreadsheetId,
+        AddSpreadsheetPageRequest $addSpreadsheetPageRequest
+    ): Google_Service_Sheets_BatchUpdateSpreadsheetResponse {
         return $this->googleSpreadsheetClient->addSpreadsheetPage($spreadsheetId, $addSpreadsheetPageRequest);
     }
 
@@ -131,15 +142,49 @@ class GoogleSpreadsheetService
         string $spreadsheetId,
         AppendDimensionToSpreadsheetPageRequest $appendDimensionToSpreadsheetPageRequest
     ): Google_Service_Sheets_BatchUpdateSpreadsheetResponse {
-        return $this->googleSpreadsheetClient->appendDimensionToSpreadsheetPage($spreadsheetId, $appendDimensionToSpreadsheetPageRequest);
+        return $this->googleSpreadsheetClient->appendDimensionToSpreadsheetPage($spreadsheetId,
+            $appendDimensionToSpreadsheetPageRequest);
     }
 
-    public function createGoogleSpreadsheet(string $name, ?string $parentFolderId = null): Google_Service_Sheets_Spreadsheet
-    {
+    /**
+     * @param string $name
+     * @param string|null $parentFolderId
+     * @return Google_Service_Sheets_Spreadsheet
+     */
+    public function createGoogleSpreadsheet(
+        string $name,
+        ?string $parentFolderId = null
+    ): Google_Service_Sheets_Spreadsheet {
         $file = $this->googleDriveFileFactory->createSpreadsheetFile($name, $parentFolderId);
         $createdFile = $this->googleServiceDriveLocal->createFile($file);
 
         return $this->googleSpreadsheetClient->getSpreadsheet($createdFile->getId());
+    }
+
+    /**
+     * @param string $spreadsheetId
+     * @param AddSingleRowRequest $addSingleRowRequest
+     * @return Google_Service_Sheets_AppendValuesResponse
+     */
+    public function addSingleRow(
+        string $spreadsheetId,
+        AddSingleRowRequest $addSingleRowRequest
+    ): Google_Service_Sheets_AppendValuesResponse {
+        $nativeSheets = new Google_Service_Sheets($this->googleSpreadsheetClient);
+
+        $updateRange = $addSingleRowRequest->getSheetPageTitle().'!'.$addSingleRowRequest->getColumnStart();
+
+        return $nativeSheets->spreadsheets_values->append(
+            $spreadsheetId,
+            $updateRange,
+            new Google_Service_Sheets_ValueRange([
+                'range' => $updateRange,
+                'values' => [
+                    'values' => $addSingleRowRequest->getValues()
+                ],
+            ]),
+            ['valueInputOption' => 'USER_ENTERED']
+        );
     }
 
     /**
