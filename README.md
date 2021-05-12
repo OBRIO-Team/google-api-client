@@ -5,7 +5,7 @@ PHP package to manage google-api interactions
 * Google Drive API
 * Google Spreadsheet API
 
-##Installation
+## Installation
 
 ```composer log
 composer require obrio-team/google-api-client
