@@ -19,6 +19,7 @@ namespace ObrioTeam\GoogleApiClient\Factory;
 
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSpreadsheetPageRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendDimensionToSpreadsheetPageRequest;
+use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendRowsRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateFieldRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateRangeRequest;
 use ObrioTeam\GoogleApiClient\SpreadsheetDataModel\SpreadsheetDataModel;
@@ -96,14 +97,16 @@ class GoogleSpreadsheetRequestFactory
     /**
      * @param array $values
      * @param SpreadsheetDataModel $spreadsheetDataModel
+     * @param int|null $rowStart
      * @return UpdateRangeRequest
      */
     public function createUpdateRangeRequest(
         array $values,
-        SpreadsheetDataModel $spreadsheetDataModel
+        SpreadsheetDataModel $spreadsheetDataModel,
+        ?int $rowStart = null
     ): UpdateRangeRequest {
         $rowRangeValues = [];
-        $i = self::FIRST_ROW;
+        $i = $rowStart ?? self::FIRST_ROW;
         foreach ($values as $value) {
 
             $singleRow = [];
@@ -120,12 +123,54 @@ class GoogleSpreadsheetRequestFactory
         }
 
         return new UpdateRangeRequest(
-            self::FIRST_ROW,
+            $rowStart ?? self::FIRST_ROW,
             $spreadsheetDataModel->getFirstColumnPosition(),
             $i,
             $spreadsheetDataModel->getLastColumnPosition(),
             $rowRangeValues,
             $spreadsheetDataModel->getSheetTitle()
         );
+    }
+
+    /**
+     * @param array $values
+     * @param SpreadsheetDataModel $spreadsheetDataModel
+     * @return AppendRowsRequest
+     */
+    public function createAppendRowsRequest(
+        array $values,
+        SpreadsheetDataModel $spreadsheetDataModel
+    ): AppendRowsRequest {
+        $targetHeaders = $spreadsheetDataModel->getHeaders();
+
+        $plainValues = $this->getFlatRowValuesByHeaders($values, $targetHeaders);
+
+        return new AppendRowsRequest(
+            $spreadsheetDataModel->getFirstColumnPosition(),
+            $plainValues,
+            $spreadsheetDataModel->getSheetTitle()
+        );
+    }
+
+    /**
+     * @param array $rawValues
+     * @param array $targetHeaders
+     * @return array
+     */
+    private function getFlatRowValuesByHeaders(array $rawValues, array $targetHeaders): array
+    {
+        $plainValues = [];
+
+        if (is_array(current($rawValues))) {
+            foreach ($rawValues as $rawValue) {
+                $plainValues[] = $this->getFlatRowValuesByHeaders($rawValue, $targetHeaders);
+            }
+        } else {
+            foreach ($targetHeaders as $targetHeader) {
+                $plainValues[] = $rawValues[$targetHeader];
+            }
+        }
+
+        return $plainValues;
     }
 }

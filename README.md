@@ -57,6 +57,7 @@ services:
 | addSpreadsheetPage  | string $spreadsheetId, AddSpreadsheetPageRequest $addSpreadsheetPageRequest | Google_Service_Sheets_BatchUpdateSpreadsheetResponse  |  Add new sheet to the spreadsheet.  |
 | appendDimensionToSpreadsheetPage  | string $spreadsheetId, AppendDimensionToSpreadsheetPageRequest $appendDimensionToSpreadsheetPageRequest | Google_Service_Sheets_BatchUpdateSpreadsheetResponse  |  Append colimns or rows to the specific sheet of the spreadsheet.  |
 | createGoogleSpreadsheet  | string $name, ?string $parentFolderId = null | Google_Service_Sheets_Spreadsheet  |  Create new spreadsheet file in defined parent folder.  |
+| appendRows  | string $spreadsheetId, AppendRowsRequest $appendRowsRequest | Google_Service_Sheets_AppendValuesResponse  |  Append one or more rows to the end of table on spreadsheet.  |
 
 ### Hints
 To get all mentioned ...Request DTOs use this factories:
