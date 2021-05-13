@@ -161,13 +161,14 @@ class GoogleSpreadsheetRequestFactory
     {
         $plainValues = [];
 
-        foreach ($targetHeaders as $targetHeader) {
-            if(isset($rawValues[$targetHeader]) && is_array($rawValues[$targetHeader])){
-                $plainValues[] = [
-                    $this->getFlatRowValuesByHeaders($rawValues[$targetHeader], $targetHeaders)
-                ];
+        if (is_array(current($rawValues))) {
+            foreach ($rawValues as $rawValue) {
+                $plainValues[] = $this->getFlatRowValuesByHeaders($rawValue, $targetHeaders);
             }
-            $plainValues[] = $rawValues[$targetHeader];
+        } else {
+            foreach ($targetHeaders as $targetHeader) {
+                $plainValues[] = $rawValues[$targetHeader];
+            }
         }
 
         return $plainValues;

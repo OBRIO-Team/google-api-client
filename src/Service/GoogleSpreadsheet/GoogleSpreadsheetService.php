@@ -171,18 +171,28 @@ class GoogleSpreadsheetService
         string $spreadsheetId,
         AppendSingleRowRequest $appendSingleRowRequest
     ): Google_Service_Sheets_AppendValuesResponse {
-        $updateRange = $appendSingleRowRequest->getSheetPageTitle().'!'.chr($appendSingleRowRequest->getColumnStart() + 65).'1';
+        $updateRange = $appendSingleRowRequest->getSheetPageTitle() . '!' . chr($appendSingleRowRequest->getColumnStart() + 65) . '1';
+
+
+        if (is_array(current($appendSingleRowRequest->getValues()))) {
+            $finalValues = [...$appendSingleRowRequest->getValues()];
+        } else {
+            $finalValues = [
+                'values' => $appendSingleRowRequest->getValues(),
+            ];
+        }
 
         return $this->googleSpreadsheetClient->spreadsheets_values->append(
             $spreadsheetId,
             $updateRange,
             new Google_Service_Sheets_ValueRange([
                 'range' => $updateRange,
-                'values' => [
-                    'values' => $appendSingleRowRequest->getValues()
-                ],
+                'values' => $finalValues,
             ]),
-            ['valueInputOption' => 'USER_ENTERED']
+            [
+                'valueInputOption' => 'USER_ENTERED',
+                'insertDataOption' => 'INSERT_ROWS'
+            ]
         );
     }
 
