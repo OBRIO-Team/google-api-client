@@ -27,7 +27,7 @@ use ObrioTeam\GoogleApiClient\Client\GoogleServicesFactory;
 use ObrioTeam\GoogleApiClient\Client\GoogleServiceSpreadsheetLocal;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSpreadsheetPageRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendDimensionToSpreadsheetPageRequest;
-use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendSingleRowRequest;
+use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendRowsRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateFieldRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateRangeRequest;
 use ObrioTeam\GoogleApiClient\DTO\Response\Spreadsheet\GoogleSheetSheetsResponse;
@@ -164,21 +164,21 @@ class GoogleSpreadsheetService
 
     /**
      * @param string $spreadsheetId
-     * @param AppendSingleRowRequest $appendSingleRowRequest
+     * @param AppendRowsRequest $appendRowsRequest
      * @return Google_Service_Sheets_AppendValuesResponse
      */
-    public function appendSingleRow(
+    public function appendRows(
         string $spreadsheetId,
-        AppendSingleRowRequest $appendSingleRowRequest
+        AppendRowsRequest $appendRowsRequest
     ): Google_Service_Sheets_AppendValuesResponse {
-        $updateRange = $appendSingleRowRequest->getSheetPageTitle() . '!' . chr($appendSingleRowRequest->getColumnStart() + 65) . '1';
+        $updateRange = $appendRowsRequest->getSheetPageTitle() . '!' . chr($appendRowsRequest->getColumnStart() + 65) . '1';
 
 
-        if (is_array(current($appendSingleRowRequest->getValues()))) {
-            $finalValues = [...$appendSingleRowRequest->getValues()];
+        if (is_array(current($appendRowsRequest->getValues()))) {
+            $finalValues = [...$appendRowsRequest->getValues()];
         } else {
             $finalValues = [
-                'values' => $appendSingleRowRequest->getValues(),
+                'values' => $appendRowsRequest->getValues(),
             ];
         }
 

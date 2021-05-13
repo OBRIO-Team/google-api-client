@@ -19,7 +19,7 @@ namespace ObrioTeam\GoogleApiClient\Factory;
 
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSpreadsheetPageRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendDimensionToSpreadsheetPageRequest;
-use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendSingleRowRequest;
+use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendRowsRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateFieldRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateRangeRequest;
 use ObrioTeam\GoogleApiClient\SpreadsheetDataModel\SpreadsheetDataModel;
@@ -135,17 +135,17 @@ class GoogleSpreadsheetRequestFactory
     /**
      * @param array $values
      * @param SpreadsheetDataModel $spreadsheetDataModel
-     * @return AppendSingleRowRequest
+     * @return AppendRowsRequest
      */
-    public function createAppendSingleRowRequest(
+    public function createAppendRowsRequest(
         array $values,
         SpreadsheetDataModel $spreadsheetDataModel
-    ): AppendSingleRowRequest {
+    ): AppendRowsRequest {
         $targetHeaders = $spreadsheetDataModel->getHeaders();
 
         $plainValues = $this->getFlatRowValuesByHeaders($values, $targetHeaders);
 
-        return new AppendSingleRowRequest(
+        return new AppendRowsRequest(
             $spreadsheetDataModel->getFirstColumnPosition(),
             $plainValues,
             $spreadsheetDataModel->getSheetTitle()
