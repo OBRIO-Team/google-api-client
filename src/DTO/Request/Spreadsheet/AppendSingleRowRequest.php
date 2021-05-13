@@ -19,17 +19,17 @@ namespace ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet;
 
 
 /**
- * Class AddSingleRowRequest
+ * Class AppendSingleRowRequest
  * @package ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet
  */
-class AddSingleRowRequest
+class AppendSingleRowRequest
 {
     private int $columnStart;
     private array $values;
     private ?string $sheetPageTitle;
 
     /**
-     * AddSingleRowRequest constructor.
+     * AppendSingleRowRequest constructor.
      * @param int $columnStart
      * @param array $values
      * @param string|null $sheetPageTitle

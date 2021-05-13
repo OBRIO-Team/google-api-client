@@ -25,9 +25,9 @@ use Google_Service_Sheets_AppendValuesResponse;
 use ObrioTeam\GoogleApiClient\Client\GoogleServiceDriveLocal;
 use ObrioTeam\GoogleApiClient\Client\GoogleServicesFactory;
 use ObrioTeam\GoogleApiClient\Client\GoogleServiceSpreadsheetLocal;
-use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSingleRowRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSpreadsheetPageRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendDimensionToSpreadsheetPageRequest;
+use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendSingleRowRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateFieldRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateRangeRequest;
 use ObrioTeam\GoogleApiClient\DTO\Response\Spreadsheet\GoogleSheetSheetsResponse;
@@ -164,14 +164,14 @@ class GoogleSpreadsheetService
 
     /**
      * @param string $spreadsheetId
-     * @param AddSingleRowRequest $addSingleRowRequest
+     * @param AppendSingleRowRequest $appendSingleRowRequest
      * @return Google_Service_Sheets_AppendValuesResponse
      */
-    public function addSingleRow(
+    public function appendSingleRow(
         string $spreadsheetId,
-        AddSingleRowRequest $addSingleRowRequest
+        AppendSingleRowRequest $appendSingleRowRequest
     ): Google_Service_Sheets_AppendValuesResponse {
-        $updateRange = $addSingleRowRequest->getSheetPageTitle().'!'.chr($addSingleRowRequest->getColumnStart() + 65).'1';
+        $updateRange = $appendSingleRowRequest->getSheetPageTitle().'!'.chr($appendSingleRowRequest->getColumnStart() + 65).'1';
 
         return $this->googleSpreadsheetClient->spreadsheets_values->append(
             $spreadsheetId,
@@ -179,7 +179,7 @@ class GoogleSpreadsheetService
             new Google_Service_Sheets_ValueRange([
                 'range' => $updateRange,
                 'values' => [
-                    'values' => $addSingleRowRequest->getValues()
+                    'values' => $appendSingleRowRequest->getValues()
                 ],
             ]),
             ['valueInputOption' => 'USER_ENTERED']

@@ -17,9 +17,9 @@ declare(strict_types=1);
 
 namespace ObrioTeam\GoogleApiClient\Factory;
 
-use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSingleRowRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AddSpreadsheetPageRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendDimensionToSpreadsheetPageRequest;
+use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\AppendSingleRowRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateFieldRequest;
 use ObrioTeam\GoogleApiClient\DTO\Request\Spreadsheet\UpdateRangeRequest;
 use ObrioTeam\GoogleApiClient\SpreadsheetDataModel\SpreadsheetDataModel;
@@ -135,24 +135,41 @@ class GoogleSpreadsheetRequestFactory
     /**
      * @param array $values
      * @param SpreadsheetDataModel $spreadsheetDataModel
-     * @return AddSingleRowRequest
+     * @return AppendSingleRowRequest
      */
-    public function createAddSingleRowRequest(
+    public function createAppendSingleRowRequest(
         array $values,
         SpreadsheetDataModel $spreadsheetDataModel
-    ): AddSingleRowRequest {
+    ): AppendSingleRowRequest {
         $targetHeaders = $spreadsheetDataModel->getHeaders();
 
-        $plainValues = [];
+        $plainValues = $this->getFlatRowValuesByHeaders($values, $targetHeaders);
 
-        foreach ($targetHeaders as $targetHeader) {
-            $plainValues[] = $values[$targetHeader];
-        }
-
-        return new AddSingleRowRequest(
+        return new AppendSingleRowRequest(
             $spreadsheetDataModel->getFirstColumnPosition(),
             $plainValues,
             $spreadsheetDataModel->getSheetTitle()
         );
+    }
+
+    /**
+     * @param array $rawValues
+     * @param array $targetHeaders
+     * @return array
+     */
+    private function getFlatRowValuesByHeaders(array $rawValues, array $targetHeaders): array
+    {
+        $plainValues = [];
+
+        foreach ($targetHeaders as $targetHeader) {
+            if(isset($rawValues[$targetHeader]) && is_array($rawValues[$targetHeader])){
+                $plainValues[] = [
+                    $this->getFlatRowValuesByHeaders($rawValues[$targetHeader], $targetHeaders)
+                ];
+            }
+            $plainValues[] = $rawValues[$targetHeader];
+        }
+
+        return $plainValues;
     }
 }
