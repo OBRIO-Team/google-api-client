@@ -21,6 +21,7 @@ use Google\Service\Exception;
 use Google_Service_Drive_DriveFile;
 use Google_Service_Drive_FileList;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use ObrioTeam\GoogleApiClient\Client\GoogleServiceDriveLocal;
 use ObrioTeam\GoogleApiClient\Client\GoogleServicesFactory;
 use ObrioTeam\GoogleApiClient\Service\GoogleItemRuleFilter\GoogleItemRuleFilterService;
@@ -145,16 +146,11 @@ class GoogleDriveService
 
     /**
      * @param string $fileId
-     * @return Request
+     * @return Response
      */
-    public function getNonGoogleDocsFileContent(string $fileId): Request
+    public function getNonGoogleDocsFileContent(string $fileId): Response
     {
-        /**
-         * @var Request $contentRequest
-         * with this options native method return \GuzzleHttp\Psr7\Request
-         */
-        $contentRequest = $this->googleDriveClient->files->get($fileId, ['alt' => 'media']);
-        return $contentRequest;
+        return $this->googleDriveClient->files->get($fileId, ['alt' => 'media']);
     }
 
     /**
@@ -164,8 +160,9 @@ class GoogleDriveService
      */
     public function changeFileStatus(Google_Service_Drive_DriveFile $file, ContentStatusAbstract $targetStatus): ?Google_Service_Drive_DriveFile
     {
-        $file = $this->googleItemStatusService->changeItemStatus($file, $targetStatus);
-        return $this->updateFile($file->getId(), $file);
+        $fileId = $file->getId();
+        $updateDummyFile = $this->googleItemStatusService->changeItemStatus($file, $targetStatus);
+        return $this->updateFile($fileId, $updateDummyFile);
     }
 
     /**
