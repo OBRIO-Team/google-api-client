@@ -81,8 +81,9 @@ class GoogleItemStatusService
     ): Google_Service_Drive_DriveFile {
         $newStatus = $contentStatusContainer->transitionTo($newStatus);
         $newFileName = sprintf('%s%s%s', $newStatus->getStatusLabel(), $this->delimiter, $googleFile->getName());
-        $googleFile->setName($newFileName);
+        $dummyFile = new Google_Service_Drive_DriveFile();
+        $dummyFile->setName($newFileName);
 
-        return $googleFile;
+        return $dummyFile;
     }
 }

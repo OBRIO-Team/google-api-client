@@ -52,7 +52,7 @@ abstract class ContentStatusAbstract
     public static function create(string $statusLabel, array $customStatuses = []): ContentStatusAbstract
     {
         $resultStatuses = array_merge(self::STATUSES, $customStatuses);
-        if (!in_array($statusLabel, $resultStatuses)) {
+        if (!in_array($statusLabel, array_keys($resultStatuses))) {
             throw new InvalidArgumentException(sprintf('Unknown google file status given - %s', $statusLabel));
         }
         $statusesClassName = $resultStatuses[$statusLabel];
